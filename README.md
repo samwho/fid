@@ -9,9 +9,7 @@ by its contents, that can be extended by anyone.
 Each "identifier" is a function with the following signature:
 
 ```rust
-// T is a BufReader<File> in practice, but Rust can't yet have bounds on types
-// in type aliases.
-pub(crate) type Identifier<T> = fn(&mut T) -> Option<String>;
+pub(crate) type Identifier = fn(&mut BufReader<File>) -> Option<String>;
 ```
 
 If the identifier doesn't think the file is of the type it is looking for, it
@@ -23,7 +21,7 @@ get an idea for how they are laid out.
 
 ## Usage
 
-```bash
+```
 $ cargo run -- src/main.rs
 Rust source file
 $ cargo run -- Cargo.toml

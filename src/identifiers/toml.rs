@@ -1,6 +1,6 @@
 use std::io::{BufRead, Read, Seek};
 
-pub(crate) fn toml<T>(input: &mut T) -> Option<String>
+pub(crate) fn identify<T>(input: &mut T) -> Option<String>
 where
     T: BufRead + Read + Seek,
 {
@@ -22,8 +22,9 @@ mod tests {
     use anyhow::Result;
 
     #[test]
-    fn test_is_toml_file() -> Result<()> {
-        let mut f = file(
+    fn test_is() -> Result<()> {
+        assert_match(
+            identify,
             "
             [package]
             name = \"fid\"
@@ -31,28 +32,16 @@ mod tests {
             authors = [\"Sam Rose <hello@samwho.dev>\"]
             edition = \"2018\"
         ",
-        )?;
-
-        assert_eq!(toml(&mut f).is_some(), true);
-        Ok(())
+        )
     }
 
     #[test]
-    fn test_is_not_toml_file() -> Result<()> {
-        let mut f = file(
-            "
-            This is not a TOML file.
-        ",
-        )?;
-
-        assert_eq!(toml(&mut f).is_some(), false);
-        Ok(())
+    fn test_not() -> Result<()> {
+        assert_no_match(identify, "This is not a TOML file.")
     }
 
     #[test]
-    fn test_empty_file() -> Result<()> {
-        let mut f = file("")?;
-        assert_eq!(toml(&mut f).is_some(), false);
-        Ok(())
+    fn test_empty() -> Result<()> {
+        assert_no_match(identify, "")
     }
 }

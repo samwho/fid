@@ -1,6 +1,6 @@
 use std::io::{BufRead, Read, Seek};
 
-pub(crate) fn rust<T>(input: &mut T) -> Option<String>
+pub(crate) fn identify<T>(input: &mut T) -> Option<String>
 where
     T: BufRead + Read + Seek,
 {
@@ -22,35 +22,24 @@ mod tests {
     use anyhow::Result;
 
     #[test]
-    fn test_is_rust_file() -> Result<()> {
-        let mut f = file(
+    fn test_is() -> Result<()> {
+        assert_match(
+            identify,
             "
             fn main() {
                 println!(\"Hello, world!\");
             }
         ",
-        )?;
-
-        assert_eq!(rust(&mut f).is_some(), true);
-        Ok(())
+        )
     }
 
     #[test]
-    fn test_is_not_rust_file() -> Result<()> {
-        let mut f = file(
-            "
-            This is not a Rust file.
-        ",
-        )?;
-
-        assert_eq!(rust(&mut f).is_some(), false);
-        Ok(())
+    fn test_not() -> Result<()> {
+        assert_no_match(identify, "This is not a Rust file.")
     }
 
     #[test]
-    fn test_empty_file() -> Result<()> {
-        let mut f = file("")?;
-        assert_eq!(rust(&mut f).is_some(), false);
-        Ok(())
+    fn test_empty() -> Result<()> {
+        assert_no_match(identify, "")
     }
 }

@@ -3,7 +3,6 @@
 mod identifiers;
 
 use anyhow::Result;
-use identifiers::{rust, toml};
 use std::{
     fs::File,
     io::{BufReader, Seek, SeekFrom},
@@ -16,17 +15,15 @@ struct Opt {
     path: PathBuf,
 }
 
-pub(crate) type Identifier<T> = fn(&mut T) -> Option<String>;
-
 fn main() -> Result<()> {
     let opt = Opt::from_args();
-    let fs: Vec<Identifier<BufReader<File>>> = vec![rust, toml];
 
     let mut r = BufReader::new(File::open(opt.path)?);
 
-    for f in fs {
+    identifiers::init();
+    for identifier in identifiers::all() {
         r.seek(SeekFrom::Start(0))?;
-        match f(&mut r) {
+        match identifier(&mut r) {
             Some(result) => println!("{}", result),
             None => continue,
         }
@@ -37,6 +34,7 @@ fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use anyhow::Result;
     use std::{
         fs::File,
@@ -49,5 +47,20 @@ mod tests {
         f.write(content.as_bytes())?;
         f.seek(SeekFrom::Start(0))?;
         Ok(BufReader::new(f))
+    }
+
+    pub(crate) fn assert_match(identifier: identifiers::Identifier, content: &str) -> Result<()> {
+        let mut f = file(content)?;
+        assert_eq!(identifier(&mut f).is_some(), true);
+        Ok(())
+    }
+
+    pub(crate) fn assert_no_match(
+        identifier: identifiers::Identifier,
+        content: &str,
+    ) -> Result<()> {
+        let mut f = file(content)?;
+        assert_eq!(identifier(&mut f).is_some(), false);
+        Ok(())
     }
 }
