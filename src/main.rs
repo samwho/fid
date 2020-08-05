@@ -3,13 +3,13 @@
 mod identifiers;
 
 use anyhow::Result;
+use identifiers::{rust, toml};
 use std::{
     fs::File,
     io::{BufReader, Seek, SeekFrom},
     path::PathBuf,
 };
 use structopt::StructOpt;
-use identifiers::{rust, toml};
 
 #[derive(Debug, StructOpt)]
 struct Opt {
@@ -37,9 +37,12 @@ fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs::File, io::{Write, BufReader, SeekFrom, Seek}};
-    use tempfile::tempfile;
     use anyhow::Result;
+    use std::{
+        fs::File,
+        io::{BufReader, Seek, SeekFrom, Write},
+    };
+    use tempfile::tempfile;
 
     pub(crate) fn file(content: &str) -> Result<BufReader<File>> {
         let mut f = tempfile()?;

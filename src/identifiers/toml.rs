@@ -1,10 +1,8 @@
+use std::io::{BufRead, Read, Seek};
 
-use std::{
-    io::{Read, Seek, BufRead},
-};
-
-pub(crate) fn toml<T>(input: &mut T) -> Option<String> 
-where T: BufRead + Read + Seek
+pub(crate) fn toml<T>(input: &mut T) -> Option<String>
+where
+    T: BufRead + Read + Seek,
 {
     let len = input.stream_len().ok()?;
     if len > 1024 * 1024 || len == 0 {
@@ -24,24 +22,28 @@ mod tests {
     use anyhow::Result;
 
     #[test]
-    fn test_is_rust_file() -> Result<()> {
-        let mut f = file("
+    fn test_is_toml_file() -> Result<()> {
+        let mut f = file(
+            "
             [package]
             name = \"fid\"
             version = \"0.1.0\"
             authors = [\"Sam Rose <hello@samwho.dev>\"]
             edition = \"2018\"
-        ")?;
+        ",
+        )?;
 
         assert_eq!(toml(&mut f).is_some(), true);
         Ok(())
     }
 
     #[test]
-    fn test_is_not_rust_file() -> Result<()> {
-        let mut f = file("
+    fn test_is_not_toml_file() -> Result<()> {
+        let mut f = file(
+            "
             This is not a TOML file.
-        ")?;
+        ",
+        )?;
 
         assert_eq!(toml(&mut f).is_some(), false);
         Ok(())

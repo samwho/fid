@@ -1,9 +1,8 @@
-use std::{
-    io::{Read, Seek, BufRead},
-};
+use std::io::{BufRead, Read, Seek};
 
-pub(crate) fn rust<T>(input: &mut T) -> Option<String> 
-where T: BufRead + Read + Seek
+pub(crate) fn rust<T>(input: &mut T) -> Option<String>
+where
+    T: BufRead + Read + Seek,
 {
     let len = input.stream_len().ok()?;
     if len > 1024 * 1024 || len == 0 {
@@ -24,11 +23,13 @@ mod tests {
 
     #[test]
     fn test_is_rust_file() -> Result<()> {
-        let mut f = file("
+        let mut f = file(
+            "
             fn main() {
                 println!(\"Hello, world!\");
             }
-        ")?;
+        ",
+        )?;
 
         assert_eq!(rust(&mut f).is_some(), true);
         Ok(())
@@ -36,9 +37,11 @@ mod tests {
 
     #[test]
     fn test_is_not_rust_file() -> Result<()> {
-        let mut f = file("
+        let mut f = file(
+            "
             This is not a Rust file.
-        ")?;
+        ",
+        )?;
 
         assert_eq!(rust(&mut f).is_some(), false);
         Ok(())
