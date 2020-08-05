@@ -9,6 +9,7 @@ use std::{
     path::PathBuf,
 };
 use structopt::StructOpt;
+use identifiers::{rust, toml};
 
 #[derive(Debug, StructOpt)]
 struct Opt {
@@ -19,7 +20,7 @@ pub(crate) type Identifier<T> = fn(&mut T) -> Option<String>;
 
 fn main() -> Result<()> {
     let opt = Opt::from_args();
-    let fs: Vec<Identifier<BufReader<File>>> = vec![identifiers::rust];
+    let fs: Vec<Identifier<BufReader<File>>> = vec![rust, toml];
 
     let mut r = BufReader::new(File::open(opt.path)?);
 
