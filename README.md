@@ -9,8 +9,8 @@ by its contents, that can be extended by anyone.
 Each "identifier" is a function with the following signature:
 
 ```rust
-# T is a BufReader<File> in practice, but Rust can't yet have bounds on types
-# in type aliases.
+// T is a BufReader<File> in practice, but Rust can't yet have bounds on types
+// in type aliases.
 pub(crate) type Identifier<T> = fn(&mut T) -> Option<String>;
 ```
 
