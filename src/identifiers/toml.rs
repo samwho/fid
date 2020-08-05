@@ -1,10 +1,11 @@
 use std::io::{BufRead, Read, Seek};
+use super::length;
 
 pub(crate) fn identify<T>(input: &mut T) -> Option<String>
 where
     T: BufRead + Read + Seek,
 {
-    let len = input.stream_len().ok()?;
+    let len = length(input).ok()?;
     if len > 1024 * 1024 || len == 0 {
         return None;
     }

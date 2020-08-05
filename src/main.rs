@@ -1,5 +1,3 @@
-#![feature(seek_convenience)]
-
 mod identifiers;
 
 use anyhow::Result;
